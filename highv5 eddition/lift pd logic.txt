@@ -1,0 +1,15 @@
+input rotation of shaft
+
+error = wanted shaft pos - current 
+
+max speed of lift 11 volts
+
+k = 360/11 = 32.7272727273 || 11/360 = 0.03055555555(11/360 is the correct one)
+
+voltage to motor = 0.03055555555* error
+
+ex. wanted 30 current is 10  error = 20
+loop
+
+1(20). 0.03055555555 * error =0.611111111
+5(15).= 0.45833333325
