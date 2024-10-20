@@ -101,7 +101,7 @@ double coterm(double angle);               // Returns the closest coterminal ang
 
 void setStartingAngle(double Angle);       // Sets the starting angle, should be set before enabling drivetrain control.
 
-
+void setTimeoutTime(double time);
 
 // All possible configurations of the drive train, dont worry about this.
 void leftDriveMotors(vex::motor&);

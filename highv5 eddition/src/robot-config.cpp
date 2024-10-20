@@ -23,6 +23,8 @@ rotation Rotation3 = rotation(PORT3, false);
 motor liftMotorA = motor(PORT2, ratio18_1, false);
 motor liftMotorB = motor(PORT4, ratio18_1, true);
 motor_group lift = motor_group(liftMotorA, liftMotorB);
+optical Optical = optical(PORT9);
+potV2 Potentiometer = potV2(Brain.ThreeWirePort.H);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

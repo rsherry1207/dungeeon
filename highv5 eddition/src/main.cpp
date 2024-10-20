@@ -14,57 +14,8 @@
 // doink                digital_out   B               
 // Rotation3            rotation      3               
 // lift                 motor_group   2, 4            
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Drive1               motor         20              
-// Drive2               motor         19              
-// Drive3               motor         17              
-// Drive4               motor         12              
-// Drive5               motor         13              
-// Drive6               motor         14              
-// Controller1          controller                    
-// InertialSensor       inertial      15              
-// clamp                digital_out   A               
-// Intake               motor         10              
-// doink                digital_out   B               
-// Rotation3            rotation      3               
-// lift                 motor_group   2, 4            
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Drive1               motor         20              
-// Drive2               motor         19              
-// Drive3               motor         17              
-// Drive4               motor         12              
-// Drive5               motor         13              
-// Drive6               motor         14              
-// Controller1          controller                    
-// InertialSensor       inertial      16              
-// clamp                digital_out   A               
-// Intake               motor         10              
-// doink                digital_out   B               
-// Rotation3            rotation      3               
-// lift                 motor_group   2, 4            
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Drive1               motor         20              
-// Drive2               motor         19              
-// Drive3               motor         17              
-// Drive4               motor         12              
-// Drive5               motor         13              
-// Drive6               motor         14              
-// Controller1          controller                    
-// InertialSensor       inertial      16              
-// clamp                digital_out   A               
-// Intake               motor         10              
-// doink                digital_out   B               
-// Rotation             rotation      3               
-// lift                 motor_group   2, 4            
+// Optical              optical       9               
+// Potentiometer        potV2         H               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
@@ -87,7 +38,10 @@
 using namespace vex;
 competition Competition;
 bool ClampState = false;
+bool autonRingdetector =true;
+bool colorStop = false;
 
+color detectColor = Optical.color();
 
 void Driver()
 {
@@ -101,22 +55,36 @@ void whenStarted()
 {
   InertialSensor.startCalibration();
   waitUntil(!InertialSensor.isCalibrating());
+  leftDriveMotors(Drive3, Drive2, Drive1);
+  rightDriveMotors(Drive6, Drive5, Drive4);
   lift.setStopping(hold);
   rotation Rotation3 = rotation(PORT3,false);
   Rotation3.resetPosition();
-  leftDriveMotors(Drive3, Drive2, Drive1);
-  rightDriveMotors(Drive6, Drive5, Drive4);
   enableDrivetrain();
 }
 
+int colorstop()
+{
+  while(true){
+  if(Optical.hue() >= 0 && Optical.hue() <= 45 && colorStop == true){
+    Intake.stop(brake);
+    printf("WORK");
+  }
+  else
+  {
+    return 0;
+  }
+}
+}
 
 void IntakeIn(){Intake.spin(forward, 11 , voltageUnits::volt);}
 void IntakeOut(){Intake.spin(forward, -11 , voltageUnits::volt);}
 void IntakeStop(){Intake.spin(forward, 0 , voltageUnits::volt);}
 
 void lifting(){
-  lift.spin(forward, -11 , voltageUnits::volt);
-}
+    lift.spin(forward, -11 , voltageUnits::volt);
+  }
+  
 void liftdescend(){
   lift.spin(forward, 11 , voltageUnits::volt);
 }
@@ -127,7 +95,36 @@ void liftingstop(){
 
 int liftPloop(){
   double kp = .3;//0.03055555555
-  double Fdeg = -34;
+  double Fdeg = -24;
+  double tolerance = 1; // Set a tolerance to avoid overshooting
+  double runTimesec= .5;
+  int exitTimer = 0;
+
+
+  double Lerror;
+  do{
+    double currentDeg = Rotation3.position(deg);
+    
+    //Brain.Screen.print(currentDeg);
+    //printf("\n %lf ", currentDeg);
+    Lerror = Fdeg - currentDeg;
+    double Lvolts = kp * Lerror;
+    lift.spin(forward,  Lvolts, voltageUnits::volt);
+    wait(5, msec);
+    exitTimer +=1;
+  }while(fabs(Lerror) > tolerance && exitTimer < 200*runTimesec );
+  //lift.stop(brake);
+  
+  //double currentDeg = Rotation3.angle(degrees);
+  //Brain.Screen.print(currentDeg);
+
+  return 0;
+
+}
+
+int resetLift(){
+  double kp = .3;//0.03055555555
+  double Fdeg = 0;
   double tolerance = 1; // Set a tolerance to avoid overshooting
   double runTimesec= .5;
   int exitTimer = 0;
@@ -147,11 +144,50 @@ int liftPloop(){
   }while(fabs(Lerror) > tolerance && exitTimer < 200*runTimesec );
   //lift.stop(brake);
   
-  /*double currentDeg = Rotation3.angle(degrees);
-  Brain.Screen.print(currentDeg);*/
+  //double currentDeg = Rotation3.angle(degrees);
+  //Brain.Screen.print(currentDeg);
 
   return 0;
 
+}
+
+int scoreLift(){
+  double kp = .3;//0.03055555555
+  double Fdeg = -144;
+  double tolerance = 1; // Set a tolerance to avoid overshooting
+  double runTimesec= .5;
+  int exitTimer = 0;
+
+
+  double Lerror;
+  do{
+    double currentDeg = Rotation3.position(deg);
+    
+    //Brain.Screen.print(currentDeg);
+    printf("\n %lf ", currentDeg);
+    Lerror = Fdeg - currentDeg;
+    double Lvolts = kp * Lerror;
+    lift.spin(forward,  Lvolts, voltageUnits::volt);
+    wait(5, msec);
+    exitTimer +=1;
+  }while(fabs(Lerror) > tolerance && exitTimer < 200*runTimesec );
+  //lift.stop(brake);
+  
+  //double currentDeg = Rotation3.angle(degrees);
+  //Brain.Screen.print(currentDeg);
+
+  return 0;
+
+}
+
+void ploopyActivate()
+{
+  task liftPloopyTask(liftPloop);
+}
+
+void ploopyReset()
+{
+  task setLift(0);
 }
 
 void extendDoink(){
@@ -170,7 +206,43 @@ void Clamping(){
     clamp.set(false);
     ClampState = false;
   }
-};
+}
+
+int segregateRed()
+{
+  //blue ring is 200-210 hyue
+  //red  is 5-20 ue
+  if(detectColor >= 1 ||  detectColor <=30){
+   wait( 880, msec);
+  IntakeOut();
+  wait( 200, msec);
+  IntakeStop();
+  }
+
+  return 0;
+}
+
+int senseRing(){
+  int curRing = detectColor;
+  printf("\n %d ", curRing);
+  if(autonRingdetector == true){
+    if(curRing >= 1 &&  curRing <=22)
+    IntakeStop();
+  }
+  else{
+    return 0;
+  }
+
+  return 0;
+}
+
+
+void segregateBlue(){
+
+
+  wait( 0.5, sec);
+  IntakeStop();
+}
 
 
 //positive side blue solo AWP no alliance stake
@@ -183,27 +255,33 @@ void Auton1()
   clamp.set(true);
   IntakeIn();
   wait(0.5, sec);
-  IntakeStop();
   turn(105);
   IntakeIn();
   move(15);
   wait(1150, msec);
-  IntakeStop();
   turn(-90);
-  move(-10);
+  IntakeStop();
+  move(-12);
   wait(100, msec);
   clamp.set(false);
   wait(300, msec);
+  move(2);
   turn(0);
   move(-22);
   clamp.set(true);
-  turn(0);
   IntakeIn();
+  turn(0);
   wait(100, msec);
-  move(40);
+  IntakeOut();
+  move(42);
+  move(-2);
   turn(45);
-  move(16);
-  wait(800, msec);
+  setTimeoutTime(1500);
+  IntakeIn();
+  move(20.5);
+  //setMoveThreshold(0.2);
+  wait(1600, msec);
+  IntakeStop();
   move(-24);
   turn(-115);
   move(30);
@@ -236,17 +314,209 @@ void Auton2()
   move(30);
 }
 
+//positive side red solo AWP no alliance stake
+void Auton3()
+{
+  setMovePowerLimit(100);
+  driveHold();
+  setMoveConstants(2.4,0.4);
+  //setMoveThreshold(0.2);
+  move(-24);
+  clamp.set(true);
+  IntakeIn();
+  wait(0.5, sec);
+  turn(-105); ///
+  IntakeIn();
+  move(15);
+  wait(1150, msec);
+  turn(90); ///
+  IntakeStop();
+  move(-12);
+  wait(100, msec);
+  clamp.set(false);
+  wait(300, msec);
+  move(2);
+  turn(0);
+  move(-22);
+  clamp.set(true);
+  IntakeIn();
+  turn(0);
+  wait(100, msec);
+  IntakeOut();
+  move(42);
+  move(-2);
+  turn(-45);///
+  setTimeoutTime(1500);
+  IntakeIn();
+  move(20.5);
+  //setMoveThreshold(0.2);
+  wait(1600, msec);
+  IntakeStop();
+  move(-24);
+  turn(115);///
+  move(30);
+}
+
+//red negative side full goal touches bar
+void Auton4()
+{
+  driveHold();
+  setMoveConstants(2.4,0.4);
+  move(-24);
+  clamp.set(true);
+  IntakeIn();
+  move(-6);
+  turn(90);///
+  move(24);
+  turn(200);///
+  move(12);
+  move(-6);
+  turn(170);////
+  move(6);
+  wait(850, msec);
+  move(-30);
+  turn(45);///
+  move(21);
+  wait(500, msec);
+  move(-24);
+  turn(-105);///
+  move(30);
+}
+
 void skillsAuton()
 {
-  
+  task colorstop;
+  IntakeIn();
+  wait(500, msec);
+  swingRight(36);
+  move(34);
+  turn(67);
+  colorStop = true;
+  IntakeStop();
+  move(-45);  //need to figure out way to stop intake b4 here or make it back b4 going back
+  colorStop = false;
+  clamp.set(true);
+  IntakeIn();
+  turn(-8);
+  move(25);
+  turn(-89);
+  move(23);
+  turn(-178);
+  //setMovePowerLimit(66);
+  move(24);
+  wait(300, msec);
+  move(12);
+  //move(-12);
+  turn(-41);
+  move(12);
+  //setMovePowerLimit(90);
+  turn(24);//46
+  move(-7);
+  //turn(45);
+  IntakeOut();
+  //turn(-90);
+  // //swingLeft(.2);//later change this bith so that after it gets the 2nd ring in line it just turns to the 3rd grabs its and rotate
+  // turn(45);
+  // move(-9);
+  clamp.set(false);
+  wait(300, msec);
+  turn(48);//news
+  IntakeIn();
+  colorStop = true;
+  move(82);
+  IntakeStop();
+  turn(-26);//center to stake rjsn
+  //IntakeStop();//try right after move80 
+  move(-51);
+  colorStop = false;
+  clamp.set(true);
+  IntakeIn();
+  turn(49);
+  move(30);
+  turn(30);
+  move(28);
+  //wait(200, msec);
+  move(-19);
+  turn(180);
+  move(23);
+  wait(300, msec);
+  move(16);
+  turn(50);
+  move(14);
+  turn(-22);
+  move(-9);
+  //turn(-46);
+  IntakeOut();
+  clamp.set(false);
+  wait(300, msec);
+  turn(-9);
+  IntakeIn();
+  //enable friction mech
+  //ploopyActivate();
+  move(82);
+  //wall stake shit
+  // wait(200, msec);
+  // move(-25);
+  // turn(90); 
+  // move(9.5);
+  // IntakeStop();
+  // scoreLift();
+  // wait(250, msec);
+  // resetLift();
+  // turn(-59);
+  // IntakeIn();
+  // move(42);
+  // turn(140);
+  //move(-24);
+  //clamp.set(true);
+  //turn(-120);
+  turn(90);
+  move(24);
+  turn(-140);
+  //move(-24);
+  //clamp.set(true);
 }
 
 
 
-void ploopyActivate()
-{
-  task liftPloopyTask(liftPloop);
+void testAuton(){
+  ploopyActivate();
+  IntakeIn();
+  wait(2, sec);
+  IntakeStop();
+  scoreLift();
+  wait(200, msec);
+  resetLift();
 }
+
+void AutonSelector(){
+  //do the 515r methood nice lasercut circle with numbers
+  int selectedAuton = Potentiometer.angle(degrees);
+  int degA1 = 1;
+  int degA2 = 20;
+  int degA3 = 40;
+  int degA4 = 60;
+  printf("%d",selectedAuton);
+
+  if(selectedAuton  >> degA1 && selectedAuton << degA2){
+    Auton1();
+  }
+  else if(selectedAuton>> degA2 && selectedAuton << degA3){
+    Auton2();
+  }
+  else if(selectedAuton>> degA3 && selectedAuton << degA4){
+    Auton3();
+  }
+  else if(selectedAuton>> degA4){
+    Auton4();
+  }
+}
+
+// void ploopyActivate()
+// {
+//   task liftPloopyTask(liftPloop);
+// }
+
 
 
 int main() 
@@ -269,7 +539,8 @@ int main()
   Controller1.ButtonL2.released(liftingstop);
 
   Controller1.ButtonLeft.pressed(ploopyActivate);
-
+  //Controller1.ButtonA.pressed(testTurn);
   Competition.drivercontrol(Driver);
   Competition.autonomous(Auton1);
+  //Competition.autonomous(AutonSelector); //for potentiometer
 }

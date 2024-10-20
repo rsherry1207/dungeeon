@@ -33,7 +33,7 @@ double moveDeceleration = 2.5; // The change in % voltage per inch when the robo
 //// Turn PD
 
 double turnKp = 1.4; // Proportional value, should be around 1.4. Higher values make the movement more accurate, but cause oscillations.
-double turnKd = 0.8; // Derivative value, should be around half of turnKp. Higher values dampen oscillations, but might cause the robot to react too strongly.
+double turnKd = 0.6; // Derivative value, should be around half of turnKp. Higher values dampen oscillations, but might cause the robot to react too strongly.
 double turnThreshold = 1.2; // The + or - amount of degrees the turn can be off by to exit the loop. Should be around 1.
 double turnPowerLimit = 80; // The maximum % voltage the drivetrain motors can be applied. Should be around 50 - 80.
 //Turn PD Timing
@@ -431,7 +431,10 @@ void setMoveConstants(double P, double D) // Sets move values.
  moveKp = P;
  moveKd = D;
 }
-
+void setTimeoutTime(double time)
+{
+  moveTimeoutTime = time;
+}
 void setMovePowerLimit(double limit) // Sets move values.
 {
  movePowerLimit = limit;
