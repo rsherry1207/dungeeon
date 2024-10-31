@@ -1,25 +1,6 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
-// Drive1               motor         20              
-// Drive2               motor         19              
-// Drive3               motor         17              
-// Drive4               motor         12              
-// Drive5               motor         13              
-// Drive6               motor         14              
-// Controller1          controller                    
-// InertialSensor       inertial      16              
-// clamp                digital_out   A               
-// Intake               motor         10              
-// doink                digital_out   B               
-// Rotation3            rotation      3               
-// lift                 motor_group   2, 4            
-// Optical              optical       9               
-// Potentiometer        potV2         H               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
 // Drive1               motor         11              
 // Drive2               motor         12              
 // Drive3               motor         14              
@@ -95,7 +76,7 @@ void liftingstop(){
 
 int liftPloop(){
   double kp = .3;//0.03055555555
-  double Fdeg = -24;
+  double Fdeg = -21;//-24//-21//
   double tolerance = 1; // Set a tolerance to avoid overshooting
   double runTimesec= .5;
   int exitTimer = 0;
@@ -285,8 +266,59 @@ void Auton1()
   move(-24);
   turn(-115);
   move(30);
-  
 }
+//positive side blue solo AWP no alliance stake string doink
+void Auton12()
+{
+  driveHold();
+  setMoveConstants(2.4,0.4);
+  //setMoveThreshold(0.2);
+  move(-24);
+  clamp.set(true);
+  IntakeIn();
+  wait(0.7, sec);
+  turn(105);
+  IntakeIn();
+  move(15);
+  wait(1150, msec);
+  turn(-90);//
+  IntakeStop();
+  move(-12);
+  //wait(100, msec);
+  clamp.set(false);
+  wait(300, msec);
+  move(2);
+  turn(-2);//
+  move(-22);
+  clamp.set(true);
+  IntakeIn();
+  turn(-47);
+  extendDoink();
+  move(60);
+  wait(100, msec);
+  retractDoink();
+  wait(300, msec);
+  setMovePowerLimit(40);
+  move(-10);
+  turn(-137);
+  //move(10);
+  // wait(100, msec);
+  // IntakeOut();
+  // move(42);
+  // move(-2);
+  // turn(45);
+  // setTimeoutTime(1500);
+  // IntakeIn();
+  // move(20.5);
+  // //setMoveThreshold(0.2);
+  // wait(1600, msec);
+  // IntakeStop();
+  // move(-24);
+  // turn(-115);
+  // move(30);
+}
+
+
 
 //blue negative side full goal touches bar
 void Auton2()
@@ -300,18 +332,18 @@ void Auton2()
   turn(-90);
   move(24);
   turn(-200);
-  move(12);
-  move(-6);
+  move(13);
+  move(-7);
   turn(-170);
-  move(6);
+  move(8);
   wait(850, msec);
-  move(-30);
+  move(-32);
   turn(-45);
   move(21);
   wait(500, msec);
   move(-24);
   turn(105);
-  move(30);
+  //move(33);
 }
 
 //positive side red solo AWP no alliance stake
@@ -357,6 +389,43 @@ void Auton3()
   move(30);
 }
 
+//positive side red solo AWP no alliance stake string doink
+void Auton32()
+{
+  driveHold();
+  setMoveConstants(2.4,0.4);
+  //setMoveThreshold(0.2);
+  move(-24);
+  clamp.set(true);
+  IntakeIn();
+  wait(0.7, sec);
+  turn(-105);
+  IntakeIn();
+  move(15);
+  wait(1150, msec);
+  turn(90);//
+  IntakeStop();
+  move(-12);
+  //wait(100, msec);
+  clamp.set(false);
+  wait(300, msec);
+  move(2);
+  turn(1);//
+  move(-21);
+  clamp.set(true);
+  IntakeIn();
+  turn(47);
+  extendDoink();
+  move(60);
+  wait(100, msec);
+  retractDoink();
+  wait(300, msec);
+  setMovePowerLimit(40);
+  move(-10);
+  turn(137);
+  //move(10);
+}
+
 //red negative side full goal touches bar
 void Auton4()
 {
@@ -369,18 +438,19 @@ void Auton4()
   turn(90);///
   move(24);
   turn(200);///
-  move(12);
-  move(-6);
+  move(13);
+  move(-7);
   turn(170);////
-  move(6);
+  move(7);
   wait(850, msec);
-  move(-30);
+  move(-31);
   turn(45);///
   move(21);
   wait(500, msec);
   move(-24);
   turn(-105);///
-  move(30);
+  turn(180);
+ // move(30);
 }
 
 void skillsAuton()
@@ -407,11 +477,11 @@ void skillsAuton()
   wait(300, msec);
   move(12);
   //move(-12);
-  turn(-41);
+  turn(-45);
   move(12);
   //setMovePowerLimit(90);
   turn(24);//46
-  move(-7);
+  move(-11);
   //turn(45);
   IntakeOut();
   //turn(-90);
@@ -425,13 +495,13 @@ void skillsAuton()
   colorStop = true;
   move(82);
   IntakeStop();
-  turn(-26);//center to stake rjsn
+  turn(-23);//center to stake rjsn
   //IntakeStop();//try right after move80 
   move(-51);
   colorStop = false;
   clamp.set(true);
   IntakeIn();
-  turn(49);
+  turn(45);
   move(30);
   turn(30);
   move(28);
@@ -444,7 +514,7 @@ void skillsAuton()
   turn(50);
   move(14);
   turn(-22);
-  move(-9);
+  move(-11);
   //turn(-46);
   IntakeOut();
   clamp.set(false);
@@ -470,11 +540,38 @@ void skillsAuton()
   //move(-24);
   //clamp.set(true);
   //turn(-120);
+  turn(-90);
+  wait(300, msec);
+  colorStop = true;
+  move(30);
+  IntakeStop();
+  turn(-218);
+  //IntakeStop();
+  move(-29);
+  colorStop = false;
+  //wait(100, msec);
+  clamp.set(true);
+  IntakeIn();
+  turn(-127);
+  setMovePowerLimit(75);
+  move(72);//71
+  wait(200, msec);
+  turn(10);
+  move(40);
+  wait(200, msec);
+  move(-12);
+  turn(-20);
+  move(15);
+  turn(-38);
+  extendDoink();
+  move(8);
   turn(90);
-  move(24);
-  turn(-140);
-  //move(-24);
-  //clamp.set(true);
+  turn(145);
+  move(-7);
+  IntakeOut();
+  clamp.set(false);
+  turn(-95);
+  move(-111);
 }
 
 
@@ -541,6 +638,6 @@ int main()
   Controller1.ButtonLeft.pressed(ploopyActivate);
   //Controller1.ButtonA.pressed(testTurn);
   Competition.drivercontrol(Driver);
-  Competition.autonomous(Auton1);
+  Competition.autonomous(Auton4);
   //Competition.autonomous(AutonSelector); //for potentiometer
 }
